@@ -17,6 +17,13 @@ const routes = [
     component: function() {
       return import('../views/Login.vue')
     }
+  },
+  {
+    path: '/channels',
+    name: 'Channels',
+    component: function() {
+      return import('../views/Channels.vue')
+    }
   }
 ]
 
