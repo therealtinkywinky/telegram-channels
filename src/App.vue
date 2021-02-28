@@ -7,6 +7,7 @@
 <style>
 html, body {
   background-color: #403E3E;
+  height: 100%;
 }
 
 #app {
@@ -15,5 +16,6 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  height: 100%;
 }
 </style>

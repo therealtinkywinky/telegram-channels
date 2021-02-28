@@ -1,40 +1,46 @@
 <template>
-  <div>
+  <div class="h-100">
     <b-overlay :show="overlay" variant="secondary" no-wrap></b-overlay>
 
-    <b-card
-      v-if="card_phone"
-      text-variant="white"
-      bg-variant="dark"
-      style="width: 25%"
-      class="mx-auto mt-5"
-      footer-bg-variant="danger">
+    <b-container fluid class="h-100">
+      <b-row align-v="center" class="h-100">
+        <b-col>
+          <b-card
+            v-if="card_phone"
+            text-variant="white"
+            bg-variant="dark"
+            style="width: 25%"
+            class="mx-auto"
+            footer-bg-variant="danger">
 
-      <b-card-text>
-        <b-form-input v-model="phone" placeholder="Phone Number" @input="error = false"></b-form-input>
-      </b-card-text>
+            <b-card-text>
+              <b-form-input v-model.trim="phone" placeholder="Phone Number" @input="error = false"></b-form-input>
+            </b-card-text>
 
-      <b-button href="#" variant="success" @click="sendCode">Send Code</b-button>
+            <b-button href="#" variant="success" @click="sendCode">Send Code</b-button>
 
-      <template #footer v-if="error">An error occured!</template>
-    </b-card>
+            <template #footer v-if="error">An error occured!</template>
+          </b-card>
 
-    <b-card
-      v-if="card_code"
-      text-variant="white"
-      bg-variant="dark"
-      style="width: 25%"
-      class="mx-auto mt-5"
-      footer-bg-variant="danger">
+          <b-card
+            v-if="card_code"
+            text-variant="white"
+            bg-variant="dark"
+            style="width: 25%"
+            class="mx-auto"
+            footer-bg-variant="danger">
 
-      <b-card-text>
-        <b-form-input v-model="code" placeholder="Code" @input="error = false"></b-form-input>
-      </b-card-text>
+            <b-card-text>
+              <b-form-input v-model.trim="code" placeholder="Code" @input="error = false"></b-form-input>
+            </b-card-text>
 
-      <b-button href="#" variant="info" @click="signIn">Sign In</b-button>
+            <b-button href="#" variant="info" @click="signIn">Sign In</b-button>
 
-      <template #footer v-if="error">An error occured!</template>
-    </b-card>
+            <template #footer v-if="error">An error occured!</template>
+          </b-card>
+        </b-col>
+      </b-row>
+    </b-container>
   </div>
 </template>
 
