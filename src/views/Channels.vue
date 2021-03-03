@@ -2,36 +2,24 @@
   <div>
     <b-overlay :show="overlay" variant="secondary" no-wrap></b-overlay>
 
-    <b-container fluid class="h-100">
-      <b-row>
-        <b-col>
-          <b-input-group class="mt-3">
+    <b-navbar toggleable="lg" type="dark" variant="info">
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav>
+          <b-nav-form>
             <b-form-select v-model="channel_index">
               <b-form-select-option v-for="(channel, index) in channels" :value="index">{{ channel.title }}</b-form-select-option>
             </b-form-select>
+          </b-nav-form>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
 
-            <b-form-input></b-form-input>
-
-            <b-input-group-append>
-              <b-button variant="info">Search</b-button>
-            </b-input-group-append>
-          </b-input-group>
-        </b-col>
-      </b-row>
-
+    <b-container fluid>
       <b-row>
-        <b-col>
-          <b-carousel
-            :interval="4000"
-            controls
-            indicators
-            background="#ababab"
-            img-width="1024"
-            img-height="480"
-            style="text-shadow: 1px 1px 2px #333;">
-
-            <b-carousel-slide v-for="message in messages" img-src="https://picsum.photos/1024/480/?image=54">
-              <h1>{{ message.message }}</h1>
+        <b-col class="col-lg-6 mx-auto">
+          <b-carousel controls indicators img-width="128" img-height="128" ref="carousel">
+            <b-carousel-slide v-for="message in messages" img-src="@/assets/archive.png">
+              <h1>{{ message.mime }} - {{ message.size }} bytes - {{ message.filename }}</h1>
             </b-carousel-slide>
           </b-carousel>
         </b-col>
@@ -60,11 +48,13 @@ export default {
   watch: {
     channel_index: function(index) {
 
+      this.overlay = true;
+
       mtproto.call(
         'messages.getHistory',
         {
           peer: {
-            '_': 'inputPeerChannel',
+            _: 'inputPeerChannel',
             channel_id: this.channels[index].id,
             access_hash: this.channels[index].access_hash
           },
@@ -72,21 +62,39 @@ export default {
           offset_id: 0
         }
       ).then(result => {
-        console.log(result);
-        this.messages = result.messages;
+        this.overlay = false;
+        this.messages = [];
+
+        result.messages.forEach((message) => {
+          if (message.flags & 512) // Media
+            if (message.media._ == 'messageMediaDocument') {
+              var _message = {};
+
+              _message.mime = message.media.document.mime_type;
+              _message.size = message.media.document.size;
+
+              message.media.document.attributes.forEach((attribute) => {
+                if (attribute._ == 'documentAttributeFilename')
+                  _message.filename = attribute.file_name;
+              });
+
+              this.messages.push(_message);
+            }
+        });
       }).catch(error => {
         console.error(error);
       });
     }
   },
   mounted() {
+    this.$refs.carousel.pause();
+
     mtproto = new MTProto({
       api_id,
       api_hash
     });
 
     mtproto.call('messages.getAllChats', { except_ids: [] }).then(result => {
-      console.log(result);
       this.channels = result.chats;
     }).catch(error => {
       console.error(error);
