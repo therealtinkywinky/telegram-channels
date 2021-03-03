@@ -17,9 +17,19 @@
     <b-container fluid>
       <b-row>
         <b-col class="col-lg-6 mx-auto">
-          <b-carousel controls indicators img-width="128" img-height="128" ref="carousel">
-            <b-carousel-slide v-for="message in messages" img-src="@/assets/archive.png">
-              <h1>{{ message.mime }} - {{ message.size }} bytes - {{ message.filename }}</h1>
+          <b-carousel controls indicators ref="carousel">
+            <b-carousel-slide v-for="message in messages" img-blank>
+
+              <template #default>
+                <b-card img-src="@/assets/download.png" img-top bg-variant="transparent" class="border-0">
+                  <b-card-text>
+                  {{ message.filename }} {{ message.size }}
+                  </b-card-text>
+
+                  <b-button href="#" variant="warning">Download</b-button>
+                </b-card>
+              </template>
+
             </b-carousel-slide>
           </b-carousel>
         </b-col>
@@ -30,6 +40,7 @@
 
 <script>
 const { MTProto } = require('@mtproto/core');
+import xbytes from 'xbytes';
 
 var mtproto;
 const api_id = process.env.VUE_APP_API_ID;
@@ -71,7 +82,7 @@ export default {
               var _message = {};
 
               _message.mime = message.media.document.mime_type;
-              _message.size = message.media.document.size;
+              _message.size = xbytes(message.media.document.size);
 
               message.media.document.attributes.forEach((attribute) => {
                 if (attribute._ == 'documentAttributeFilename')
