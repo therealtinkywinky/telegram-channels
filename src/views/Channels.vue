@@ -35,7 +35,6 @@
                   <template #footer>
                     <b-progress value="43" max="100" variant="danger" height="30px" show-progress animated></b-progress>
                   </template>
-
                 </b-card>
               </template>
 
