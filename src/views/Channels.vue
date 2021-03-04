@@ -18,15 +18,24 @@
       <b-row>
         <b-col class="col-lg-6 mx-auto">
           <b-carousel controls indicators ref="carousel">
-            <b-carousel-slide v-for="message in messages" img-blank>
+            <b-carousel-slide v-for="message in messages" img-blank img-height="550">
 
               <template #default>
-                <b-card img-src="@/assets/download.png" img-top bg-variant="transparent" class="border-0">
+                <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
                   <b-card-text>
                   {{ message.filename }} {{ message.size }}
                   </b-card-text>
 
                   <b-button href="#" variant="warning">Download</b-button>
+
+                  <template #header>
+                    <img style="width:256px;" src="@/assets/download.png" />
+                  </template>
+
+                  <template #footer>
+                    <b-progress value="43" max="100" variant="danger" height="30px" show-progress animated></b-progress>
+                  </template>
+
                 </b-card>
               </template>
 
@@ -123,5 +132,9 @@ table > thead {
 
 table > tbody > tr {
   cursor: pointer;
+}
+
+.card-header, .card-footer {
+  border: 0px;
 }
 </style>
