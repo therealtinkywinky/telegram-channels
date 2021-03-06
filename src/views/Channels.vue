@@ -21,21 +21,30 @@
             <b-carousel-slide v-for="message in messages" img-blank img-height="550">
 
               <template #default>
-                <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
-                  <b-card-text>
-                  {{ message.filename }} {{ message.size }}
-                  </b-card-text>
+                <div v-if="message.type == 'document'">
+                  <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
+                    <b-card-text>{{ message.filename }} {{ message.size }}</b-card-text>
 
-                  <b-button href="#" variant="warning">Download</b-button>
+                    <b-button href="#" variant="warning">Download</b-button>
 
-                  <template #header>
-                    <img style="width:256px;" src="@/assets/download.png" />
-                  </template>
+                    <template #header>
+                      <img style="width:256px;" src="@/assets/download.png" />
+                    </template>
 
-                  <template #footer>
-                    <b-progress value="43" max="100" variant="danger" height="30px" show-progress animated></b-progress>
-                  </template>
-                </b-card>
+                    <template #footer>
+                      <b-progress value="43" max="100" variant="danger" height="30px" show-progress animated></b-progress>
+                    </template>
+                  </b-card>
+                </div>
+                <div v-else-if="message.type == 'photo'">
+                  <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
+                    <b-card-text>{{ message.text }}</b-card-text>
+
+                    <template #header>
+                      <img style="width:256px;" :src="message.base64" />
+                    </template>
+                  </b-card>
+                </div>
               </template>
 
             </b-carousel-slide>
@@ -77,7 +86,7 @@ export default {
             channel_id: this.channels[index].id,
             access_hash: this.channels[index].access_hash
           },
-          limit: 50,
+          limit: 5,
           offset_id: 0
         }
       ).then(result => {
@@ -85,10 +94,11 @@ export default {
         this.messages = [];
 
         result.messages.forEach((message) => {
-          if (message.flags & 512) // Media
-            if (message.media._ == 'messageMediaDocument') {
-              var _message = {};
+          if (message.flags & 512) { // Media
+            var _message = {};
 
+            if (message.media._ == 'messageMediaDocument') {
+              _message.type = 'document';
               _message.mime = message.media.document.mime_type;
               _message.size = xbytes(message.media.document.size);
 
@@ -98,7 +108,41 @@ export default {
               });
 
               this.messages.push(_message);
+            } else if (message.media._ == 'messageMediaPhoto') {
+              _message.type = 'photo';
+              _message.text = message.message;
+
+              mtproto.call(
+                'upload.getFile',
+                {
+                  offset: 0,
+                  limit: 1024 * 1024,
+                  flags: message.media.photo.flags,
+                  precise: true,
+                  cdn_supported: true,
+                  location: {
+                    _: 'inputPhotoFileLocation',
+                    id: message.media.photo.id,
+                    access_hash: message.media.photo.access_hash,
+                    file_reference: message.media.photo.file_reference,
+                    thumb_size: 'l'
+                  }
+                },
+                {
+                  dcId: message.media.photo.dc_id
+                }
+              ).then((response) => {
+                var u8 = new Uint8Array(response.bytes);
+                var base64 = btoa(String.fromCharCode.apply(null, u8));
+
+                _message.base64 = "data:image/jpeg;base64," + base64;
+
+                this.messages.push(_message);
+              }).catch((error) => {
+                console.log('error');
+              });
             }
+          }
         });
       }).catch(error => {
         console.error(error);
