@@ -38,15 +38,10 @@
 </template>
 
 <script>
-const { MTProto } = require('@mtproto/core');
 import xbytes from 'xbytes';
 import Logout from '../components/Logout';
 import Document from '../components/Document';
 import Photo from '../components/Photo';
-
-var mtproto;
-const api_id = process.env.VUE_APP_API_ID;
-const api_hash = process.env.VUE_APP_API_HASH;
 
 export default {
   components: {
@@ -67,7 +62,7 @@ export default {
     channel_index: function(index) {
       this.overlay = true;
 
-      mtproto.call(
+      this.$mtproto.call(
         'messages.getHistory',
         {
           peer: {
@@ -101,7 +96,7 @@ export default {
                 text: message.message
               }
 
-              mtproto.call(
+              this.$mtproto.call(
                 'upload.getFile',
                 {
                   offset: 0,
@@ -141,12 +136,7 @@ export default {
   mounted() {
     this.$refs.carousel.pause();
 
-    mtproto = new MTProto({
-      api_id,
-      api_hash
-    });
-
-    mtproto.call('messages.getAllChats', { except_ids: [] }).then(result => {
+    this.$mtproto.call('messages.getAllChats', { except_ids: [] }).then(result => {
       this.channels = result.chats;
     }).catch(error => {
       console.error(error);

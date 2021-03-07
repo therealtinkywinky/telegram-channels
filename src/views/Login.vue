@@ -45,13 +45,6 @@
 </template>
 
 <script>
-const { MTProto } = require('@mtproto/core');
-
-const api_id = process.env.VUE_APP_API_ID;
-const api_hash = process.env.VUE_APP_API_HASH;
-
-var mtproto;
-
 export default {
   data() {
     return {
@@ -71,7 +64,7 @@ export default {
 
       this.overlay = true;
 
-      mtproto.call('auth.sendCode', {
+      this.$mtproto.call('auth.sendCode', {
         phone_number: this.phone,
         settings: {
           _: 'codeSettings',
@@ -98,7 +91,7 @@ export default {
 
       this.overlay = true;
 
-      mtproto.call('auth.signIn', {
+      this.$mtproto.call('auth.signIn', {
         phone_code: this.code,
         phone_number: this.phone,
         phone_code_hash: this.phone_code_hash,
@@ -120,13 +113,8 @@ export default {
   },
   mounted() {
 
-    mtproto = new MTProto({
-      api_id,
-      api_hash,
-    });
-
-    mtproto.call('help.getNearestDc').then(result => {
-      mtproto.setDefaultDc(result.nearest_dc);
+    this.$mtproto.call('help.getNearestDc').then(result => {
+      this.$mtproto.setDefaultDc(result.nearest_dc);
     }).catch(error => {
       console.error(error);
     });
