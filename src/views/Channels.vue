@@ -93,24 +93,24 @@ export default {
         this.overlay = false;
         this.messages = [];
 
-        result.messages.forEach((message) => {
+        result.messages.forEach((message, index) => {
           if (message.flags & 512) { // Media
-            var _message = {};
-
             if (message.media._ == 'messageMediaDocument') {
-              _message.type = 'document';
-              _message.mime = message.media.document.mime_type;
-              _message.size = xbytes(message.media.document.size);
+              this.messages[index] = {
+                type: 'document',
+                mime: message.media.document.mime_type,
+                size: xbytes(message.media.document.size)
+              };
 
               message.media.document.attributes.forEach((attribute) => {
                 if (attribute._ == 'documentAttributeFilename')
-                  _message.filename = attribute.file_name;
+                  this.messages[index].filename = attribute.file_name;
               });
-
-              this.messages.push(_message);
             } else if (message.media._ == 'messageMediaPhoto') {
-              _message.type = 'photo';
-              _message.text = message.message;
+              this.messages[index] = {
+                type: 'photo',
+                text: message.message
+              }
 
               mtproto.call(
                 'upload.getFile',
@@ -135,9 +135,9 @@ export default {
                 var u8 = new Uint8Array(response.bytes);
                 var base64 = btoa(String.fromCharCode.apply(null, u8));
 
-                _message.base64 = "data:image/jpeg;base64," + base64;
+                this.messages[index].base64 = 'data:image/jpeg;base64,' + base64;
 
-                this.messages.push(_message);
+                this.messages = Object.assign({}, this.messages);
               }).catch((error) => {
                 console.log('error');
               });
