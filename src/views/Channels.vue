@@ -3,13 +3,19 @@
     <b-overlay :show="overlay" variant="secondary" no-wrap></b-overlay>
 
     <b-navbar toggleable="lg" type="dark" variant="info">
-      <b-collapse id="nav-collapse" is-nav>
+      <b-collapse is-nav>
         <b-navbar-nav>
           <b-nav-form>
             <b-form-select v-model="channel_index">
               <b-form-select-option v-for="(channel, index) in channels" :value="index">{{ channel.title }}</b-form-select-option>
             </b-form-select>
           </b-nav-form>
+        </b-navbar-nav>
+
+        <b-navbar-nav class="ml-auto">
+          <b-nav-item>
+            <b-icon-power @click="logout"></b-icon-power>
+          </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -71,6 +77,11 @@ export default {
       messages: [],
 
       channel_index: 0
+    }
+  },
+  methods: {
+    logout() {
+      mtproto.call('auth.logOut').then(() => { this.$router.push('/') });
     }
   },
   watch: {
