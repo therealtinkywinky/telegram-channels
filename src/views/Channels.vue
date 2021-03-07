@@ -14,7 +14,7 @@
 
         <b-navbar-nav class="ml-auto">
           <b-nav-item>
-            <b-icon-power @click="logout"></b-icon-power>
+            <logout></logout>
           </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
@@ -25,34 +25,10 @@
         <b-col class="col-lg-6 mx-auto">
           <b-carousel controls indicators ref="carousel">
             <b-carousel-slide v-for="message in messages" img-blank img-height="550">
-
               <template #default>
-                <div v-if="message.type == 'document'">
-                  <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
-                    <b-card-text>{{ message.filename }} {{ message.size }}</b-card-text>
-
-                    <b-button href="#" variant="warning">Download</b-button>
-
-                    <template #header>
-                      <img style="width:256px;" src="@/assets/download.png" />
-                    </template>
-
-                    <template #footer>
-                      <b-progress value="43" max="100" variant="danger" height="30px" show-progress animated></b-progress>
-                    </template>
-                  </b-card>
-                </div>
-                <div v-else-if="message.type == 'photo'">
-                  <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
-                    <b-card-text>{{ message.text }}</b-card-text>
-
-                    <template #header>
-                      <img style="width:256px;" :src="message.base64" />
-                    </template>
-                  </b-card>
-                </div>
+                <document v-if="message.type == 'document'" :filename="message.filename" :size="message.size"></document>
+                <photo v-else-if="message.type == 'photo'" :text="message.text" :base64="message.base64"></photo>
               </template>
-
             </b-carousel-slide>
           </b-carousel>
         </b-col>
@@ -64,12 +40,20 @@
 <script>
 const { MTProto } = require('@mtproto/core');
 import xbytes from 'xbytes';
+import Logout from '../components/Logout';
+import Document from '../components/Document';
+import Photo from '../components/Photo';
 
 var mtproto;
 const api_id = process.env.VUE_APP_API_ID;
 const api_hash = process.env.VUE_APP_API_HASH;
 
 export default {
+  components: {
+    Logout,
+    Document,
+    Photo
+  },
   data() {
     return {
       overlay: true,
@@ -79,14 +63,8 @@ export default {
       channel_index: 0
     }
   },
-  methods: {
-    logout() {
-      mtproto.call('auth.logOut').then(() => { this.$router.push('/') });
-    }
-  },
   watch: {
     channel_index: function(index) {
-
       this.overlay = true;
 
       mtproto.call(
@@ -180,14 +158,6 @@ export default {
 </script>
 
 <style>
-table > thead {
-  display: none;
-}
-
-table > tbody > tr {
-  cursor: pointer;
-}
-
 .card-header, .card-footer {
   border: 0px;
 }
