@@ -2,10 +2,10 @@
   <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
     <b-card-text>{{ filename }} {{ size }}</b-card-text>
 
-    <b-button href="#" variant="warning">Download</b-button>
+    <download></download>
 
     <template #header>
-      <img style="width:256px;" src="@/assets/download.png" />
+      <img src="@/assets/download.png" />
     </template>
 
     <template #footer>
@@ -15,7 +15,12 @@
 </template>
 
 <script>
+import Download from './Download';
+
 export default {
+  components: {
+    Download
+  },
   name: 'document',
   props: [
     'filename',
@@ -23,3 +28,9 @@ export default {
   ]
 }
 </script>
+
+<style scoped>
+img {
+  width: 256px;
+}
+</style>
