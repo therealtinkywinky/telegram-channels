@@ -24,19 +24,26 @@
 
           <b-card
             v-if="card_code"
+            no-body
             text-variant="white"
             bg-variant="dark"
             style="width: 25%"
             class="mx-auto"
             footer-bg-variant="danger">
 
-            <b-card-text>
-              <b-form-input v-model.trim="code" placeholder="Code" @input="error = false"></b-form-input>
-            </b-card-text>
+            <b-card-body>
+              <b-card-text>
+                <b-form-input v-model.trim="code" placeholder="Code" @input="error = ok = false"></b-form-input>
+              </b-card-text>
 
-            <b-button href="#" variant="info" @click="signIn">Sign In</b-button>
+              <b-button-group>
+                <b-button href="#" variant="info" @click="signIn">Sign In</b-button>
+                <b-button href="#" variant="danger" @click="resendCode">Resend Code</b-button>
+              </b-button-group>
+            </b-card-body>
 
-            <template #footer v-if="error">An error occured!</template>
+            <b-card-footer v-if="error" footer-bg-variant="danger">An error occured!</b-card-footer>
+            <b-card-footer v-if="ok" footer-bg-variant="success">Code sent successfully!</b-card-footer>
           </b-card>
         </b-col>
       </b-row>
@@ -50,6 +57,7 @@ export default {
     return {
       overlay: false,
       error: false,
+      ok: false,
 
       phone: '',
       code: '',
@@ -86,6 +94,29 @@ export default {
 
       });
 
+    },
+    resendCode() {
+
+      this.overlay = true;
+
+      this.$mtproto.call('auth.resendCode', {
+        phone_number: this.phone,
+        phone_code_hash: this.phone_code_hash
+      }).then((response) => {
+
+        this.phone_code_hash = response.phone_code_hash;
+
+        this.ok = true;
+
+      }).catch((error) => {
+
+        this.error = true;
+
+      }).finally(() => {
+
+        this.overlay = false;
+
+      });
     },
     signIn() {
 

@@ -23,7 +23,7 @@
     <b-container fluid>
       <b-row>
         <b-col class="col-lg-6 mx-auto">
-          <b-carousel controls indicators ref="carousel">
+          <b-carousel v-show="channel_index" controls indicators ref="carousel">
             <b-carousel-slide v-for="message in messages" img-blank img-height="550">
               <template #default>
                 <document v-if="message.type == 'document'" :filename="message.filename" :size="message.size"></document>
