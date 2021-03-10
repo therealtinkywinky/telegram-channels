@@ -5,6 +5,8 @@
     <b-container fluid class="h-100">
       <b-row align-v="center" class="h-100">
         <b-col>
+          <qr></qr>
+
           <b-card
             v-if="card_phone"
             text-variant="white"
@@ -52,7 +54,12 @@
 </template>
 
 <script>
+import qr from '../components/Login-QR';
+
 export default {
+  components: {
+    qr
+  },
   data() {
     return {
       overlay: false,
