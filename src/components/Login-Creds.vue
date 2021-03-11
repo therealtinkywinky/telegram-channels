@@ -47,7 +47,6 @@
 export default {
   data() {
     return {
-      overlay: false,
       error: false,
       ok: false,
 
@@ -61,7 +60,7 @@ export default {
   },
   methods: {
     sendCode() {
-      this.overlay = true;
+      this.$emit('overlay-on');
 
       this.$mtproto.call('auth.sendCode', {
         phone_number: this.phone,
@@ -81,12 +80,12 @@ export default {
 
       }).finally(() => {
 
-        this.overlay = false;
+        this.$emit('overlay-off');
 
       });
     },
     resendCode() {
-      this.overlay = true;
+      this.$emit('overlay-on');
 
       this.$mtproto.call('auth.resendCode', {
         phone_number: this.phone,
@@ -103,12 +102,12 @@ export default {
 
       }).finally(() => {
 
-        this.overlay = false;
+        this.$emit('overlay-off');
 
       });
     },
     signIn() {
-      this.overlay = true;
+      this.$emit('overlay-on');
 
       this.$mtproto.call('auth.signIn', {
         phone_code: this.code,
@@ -124,7 +123,7 @@ export default {
 
       }).finally(() => {
 
-        this.overlay = false;
+        this.$emit('overlay-off');
 
       });
     }

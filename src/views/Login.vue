@@ -7,7 +7,7 @@
         <b-col>
           <qr></qr>
 
-          <creds></creds>
+          <creds v-on:overlay-on="overlay = true" v-on:overlay-off="overlay = false"></creds>
         </b-col>
       </b-row>
     </b-container>
@@ -22,6 +22,11 @@ export default {
   components: {
     qr,
     creds
+  },
+  data() {
+    return {
+      overlay: false
+    }
   },
   mounted() {
     this.$mtproto.call('help.getNearestDc').then(result => {
