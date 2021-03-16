@@ -1,6 +1,6 @@
 <template>
   <b-card img-top bg-variant="transparent" header-bg-variant="transparent" footer-bg-variant="transparent" class="border-0">
-    <b-card-text>{{ filename }} {{ size }}</b-card-text>
+    <b-card-text>{{ name }} {{ size }}</b-card-text>
 
     <download></download>
 
@@ -23,7 +23,7 @@ export default {
   },
   name: 'document',
   props: [
-    'filename',
+    'name',
     'size'
   ]
 }

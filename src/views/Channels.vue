@@ -21,12 +21,19 @@
     </b-navbar>
 
     <b-container fluid>
-      <b-row>
+      <b-row v-show="channel_index" class="mt-5">
         <b-col class="col-lg-6 mx-auto">
-          <b-carousel v-show="channel_index" controls indicators ref="carousel">
+          <b-button disabled variant="outline-primary">{{ message_index + 1 }} / {{ messages.length }}</b-button>
+
+          <b-button-group class="mx-1">
+            <b-button variant="danger" :disabled="message_index == 0" @click="$refs.carousel.prev()">Previous</b-button>
+            <b-button variant="success" :disabled="message_index == messages.length - 1" @click="$refs.carousel.next()">Next</b-button>
+          </b-button-group>
+
+          <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0">
             <b-carousel-slide v-for="message in messages" img-blank img-height="550">
               <template #default>
-                <document v-if="message.type == 'document'" :filename="message.filename" :size="message.size"></document>
+                <document v-if="message.type == 'document'" :name="message.name" :size="message.size"></document>
                 <photo v-else-if="message.type == 'photo'" :text="message.text" :base64="message.base64"></photo>
               </template>
             </b-carousel-slide>
@@ -52,14 +59,29 @@ export default {
   data() {
     return {
       overlay: true,
+
       channels: [],
       messages: [],
 
-      channel_index: 0
+      channel_index: 0,
+      message_index: 0
     }
   },
-  watch: {
-    channel_index: function(index) {
+  methods: {
+    onSlideEnd(slide) {
+      this.message_index = slide;
+    },
+    getFilename(attributes) {
+      var filename = "";
+
+      attributes.forEach(attribute => {
+        if (attribute._ == 'documentAttributeFilename')
+          filename = attribute.file_name;
+      });
+
+      return filename;
+    },
+    loadMore() {
       this.overlay = true;
 
       this.$mtproto.call(
@@ -67,65 +89,30 @@ export default {
         {
           peer: {
             _: 'inputPeerChannel',
-            channel_id: this.channels[index].id,
-            access_hash: this.channels[index].access_hash
+            channel_id: this.channels[this.channel_index].id,
+            access_hash: this.channels[this.channel_index].access_hash
           },
           limit: 5,
-          offset_id: 0
+          add_offset: this.message_index
         }
       ).then(result => {
         this.overlay = false;
-        this.messages = [];
 
-        result.messages.forEach((message, index) => {
+        result.messages.forEach(message => {
           if (message.flags & 512) { // Media
-            if (message.media._ == 'messageMediaDocument') {
-              this.messages[index] = {
+            if (message.media._ == 'messageMediaDocument')
+              this.messages.push({
                 type: 'document',
                 mime: message.media.document.mime_type,
-                size: xbytes(message.media.document.size)
-              };
-
-              message.media.document.attributes.forEach((attribute) => {
-                if (attribute._ == 'documentAttributeFilename')
-                  this.messages[index].filename = attribute.file_name;
+                size: xbytes(message.media.document.size),
+                name: this.getFilename(message.media.document.attributes)
               });
-            } else if (message.media._ == 'messageMediaPhoto') {
-              this.messages[index] = {
+            else if (message.media._ == 'messageMediaPhoto')
+              this.messages.push({
                 type: 'photo',
-                text: message.message
-              }
-
-              this.$mtproto.call(
-                'upload.getFile',
-                {
-                  offset: 0,
-                  limit: 1024 * 1024,
-                  flags: message.media.photo.flags,
-                  precise: true,
-                  cdn_supported: true,
-                  location: {
-                    _: 'inputPhotoFileLocation',
-                    id: message.media.photo.id,
-                    access_hash: message.media.photo.access_hash,
-                    file_reference: message.media.photo.file_reference,
-                    thumb_size: 'l'
-                  }
-                },
-                {
-                  dcId: message.media.photo.dc_id
-                }
-              ).then((response) => {
-                var u8 = new Uint8Array(response.bytes);
-                var base64 = btoa(String.fromCharCode.apply(null, u8));
-
-                this.messages[index].base64 = 'data:image/jpeg;base64,' + base64;
-
-                this.messages = Object.assign({}, this.messages);
-              }).catch((error) => {
-                console.log('error');
+                text: message.message,
+                base64: ''
               });
-            }
           }
         });
       }).catch(error => {
@@ -133,9 +120,19 @@ export default {
       });
     }
   },
-  mounted() {
-    this.$refs.carousel.pause();
+  watch: {
+    channel_index: function(index) {
+      this.messages = [];
+      this.message_index = 0;
 
+      this.loadMore();
+    },
+    message_index: function(index) {
+      if (index == this.messages.length - 1)
+        this.loadMore();
+    }
+  },
+  mounted() {
     this.$mtproto.call('messages.getAllChats', { except_ids: [] }).then(result => {
       this.channels = result.chats;
     }).catch(error => {
