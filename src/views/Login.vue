@@ -5,7 +5,9 @@
     <b-container fluid class="h-100">
       <b-row align-v="center" class="h-100">
         <b-col>
+          <!--
           <qr></qr>
+          -->
 
           <creds v-on:overlay-on="overlay = true" v-on:overlay-off="overlay = false"></creds>
         </b-col>

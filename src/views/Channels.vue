@@ -34,7 +34,13 @@
             <b-carousel-slide v-for="message in messages" img-blank img-height="550">
               <template #default>
                 <document v-if="message.type == 'document'" :name="message.name" :size="message.size"></document>
-                <photo v-else-if="message.type == 'photo'" :text="message.text" :base64="message.base64"></photo>
+                <photo
+                  v-else-if="message.type == 'photo'"
+                  v-on:overlay-on="overlay = true"
+                  v-on:overlay-off="overlay = false"
+                  :text="message.text"
+                  :photo="message.photo">
+                </photo>
               </template>
             </b-carousel-slide>
           </b-carousel>
@@ -111,7 +117,7 @@ export default {
               this.messages.push({
                 type: 'photo',
                 text: message.message,
-                base64: ''
+                photo: message.media.photo
               });
           }
         });
