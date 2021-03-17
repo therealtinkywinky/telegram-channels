@@ -25,12 +25,13 @@ export default {
   data() {
     return {
       bytes: null,
+      mime: '',
       download: false
     }
   },
   computed: {
     base64: function() {
-      return this.bytes ? 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.bytes))) : '';
+      return this.bytes ? 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.bytes))) : require('../assets/photo.png');
     }
   },
   methods: {
@@ -44,7 +45,7 @@ export default {
           limit: 1024 * 1024, // 1 MB
           flags: this.photo.flags,
           precise: true,
-          cdn_supported: true,
+          cdn_supported: false,
           location: {
             _: 'inputPhotoFileLocation',
             id: this.photo.id,
@@ -58,15 +59,28 @@ export default {
         }
       ).then(response => {
         this.bytes = response.bytes;
+        this.mime = this.getMIME(response.type._);
         this.download = true;
-      }).catch((error) => {
+      }).catch(error => {
         console.log('error');
       }).finally(() => {
         this.$emit('overlay-off');
       });
     },
     downloadPhoto() {
-      FileSaver.saveAs(new Blob([this.bytes], { type: 'image/jpeg' }), 'telegram.jpeg');
+      FileSaver.saveAs(new Blob([this.bytes], { type: this.mime }), this.photo.id + '.jpg');
+    },
+    getMIME(type) {
+      switch (type) {
+        case "storage.fileJpeg":
+          return "image/jpeg";
+        case "storage.fileGif":
+          return "image/gif";
+        case "storage.filePng":
+          return "image/png";
+        default:
+          return "application/octet-stream";
+      }
     }
   }
 }
