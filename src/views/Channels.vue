@@ -33,7 +33,8 @@
           <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0">
             <b-carousel-slide v-for="message in messages" img-blank img-height="550">
               <template #default>
-                <document v-if="message.type == 'document'" :name="message.name" :size="message.size"></document>
+                <document v-if="message.type == 'document'" :document="message.document"></document>
+
                 <photo
                   v-else-if="message.type == 'photo'"
                   v-on:overlay-on="overlay = true"
@@ -51,7 +52,6 @@
 </template>
 
 <script>
-import xbytes from 'xbytes';
 import Logout from '../components/Logout';
 import Document from '../components/Document';
 import Photo from '../components/Photo';
@@ -77,16 +77,6 @@ export default {
     onSlideEnd(slide) {
       this.message_index = slide;
     },
-    getFilename(attributes) {
-      var filename = "";
-
-      attributes.forEach(attribute => {
-        if (attribute._ == 'documentAttributeFilename')
-          filename = attribute.file_name;
-      });
-
-      return filename;
-    },
     loadMore() {
       this.overlay = true;
 
@@ -109,9 +99,7 @@ export default {
             if (message.media._ == 'messageMediaDocument')
               this.messages.push({
                 type: 'document',
-                mime: message.media.document.mime_type,
-                size: xbytes(message.media.document.size),
-                name: this.getFilename(message.media.document.attributes)
+                document: message.media.document
               });
             else if (message.media._ == 'messageMediaPhoto')
               this.messages.push({
