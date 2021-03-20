@@ -9,7 +9,7 @@
     </template>
 
     <template #footer>
-      <b-progress max="100" variant="danger" height="30px" show-progress animated>
+      <b-progress max="100" variant="success" height="30px" show-progress animated>
         <b-progress-bar :value="progress">
           <strong>{{ progress }}%</strong>
         </b-progress-bar>
