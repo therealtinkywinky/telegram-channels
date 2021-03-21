@@ -23,14 +23,14 @@
     <b-container fluid>
       <b-row v-show="channel_index" class="mt-5">
         <b-col class="col-lg-6 mx-auto">
-          <b-button disabled variant="outline-primary">{{ message_index + 1 }} / {{ messages.length }}</b-button>
 
           <b-button-group class="mx-1">
             <b-button variant="danger" :disabled="message_index == 0" @click="$refs.carousel.prev()">Previous</b-button>
+            <b-button disabled variant="outline-secondary">{{ message_index + 1 }} / {{ messages.length }}</b-button>
             <b-button variant="success" :disabled="message_index == messages.length - 1" @click="$refs.carousel.next()">Next</b-button>
           </b-button-group>
 
-          <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0">
+          <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0" controls>
             <b-carousel-slide v-for="message in messages" img-blank img-height="550">
               <template #default>
                 <document v-if="message.type == 'document'" :document="message.document"></document>

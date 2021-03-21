@@ -25,6 +25,7 @@ export default {
   data() {
     return {
       mime: '',
+      extension: '',
       download: false,
 
       i: -1,
@@ -34,7 +35,7 @@ export default {
   },
   computed: {
     base64: function() {
-      return this.download ? 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, this.parts)) : require('../assets/photo.png');
+      return this.download ? 'data:' + this.mime + ';base64,' + btoa(String.fromCharCode.apply(null, this.parts)) : require('../assets/photo.png');
     }
   },
   methods: {
@@ -44,19 +45,32 @@ export default {
       this.i++;
     },
     downloadPhoto() {
-      FileSaver.saveAs(new Blob([this.parts], { type: this.mime }), this.photo.id + '.jpg');
+      FileSaver.saveAs(new Blob([this.parts], { type: this.mime }), this.photo.id + '.' + this.extension);
     },
-    getMIME(type) {
+    setMIMEAndExtension(type) {
+      var mime = '';
+      var extension = '';
+
       switch (type) {
-        case "storage.fileJpeg":
-          return "image/jpeg";
-        case "storage.fileGif":
-          return "image/gif";
-        case "storage.filePng":
-          return "image/png";
-        default:
-          return "application/octet-stream";
+        case 'storage.fileJpeg':
+          mime = 'image/jpeg';
+          extension = 'jpg';
+
+          break;
+        case 'storage.fileGif':
+          mime = 'image/gif';
+          extension = 'gif';
+
+          break;
+        case 'storage.filePng':
+          mime = 'image/png';
+          extension = 'png';
+
+          break;
       }
+
+      this.mime = mime;
+      this.extension = extension;
     }
   },
   watch: {
@@ -91,7 +105,7 @@ export default {
         if (response.type._ == 'storage.filePartial')
           this.i++;
         else {
-          this.mime = this.getMIME(response.type._);
+          this.setMIMEAndExtension(response.type._);
           this.download = true;
         }
       }).catch(error => {
