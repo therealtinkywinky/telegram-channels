@@ -44,9 +44,9 @@ export default {
             access_hash: self.document.access_hash,
             file_reference: self.document.file_reference
           },
+          flags: self.document.flags,
           offset: this.i * this.mb,
           limit: this.mb,
-          flags: self.document.flags,
           precise: true,
           cdn_supported: false
         },
@@ -55,8 +55,6 @@ export default {
         }
       ).then(result => {
         this.parts.push(result.bytes);
-
-console.log(this.percent)
 
         self.$emit('progress', this.percent);
 

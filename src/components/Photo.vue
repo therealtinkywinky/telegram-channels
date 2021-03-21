@@ -24,51 +24,27 @@ export default {
   ],
   data() {
     return {
-      bytes: null,
       mime: '',
-      download: false
+      download: false,
+
+      i: -1,
+      parts: [],
+      mb: 1024 * 1024,
     }
   },
   computed: {
     base64: function() {
-      return this.bytes ? 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, new Uint8Array(this.bytes))) : require('../assets/photo.png');
+      return this.download ? 'data:image/jpeg;base64,' + btoa(String.fromCharCode.apply(null, this.parts)) : require('../assets/photo.png');
     }
   },
   methods: {
     viewPhoto() {
       this.$emit('overlay-on');
 
-      this.$mtproto.call(
-        'upload.getFile',
-        {
-          offset: 0,
-          limit: 1024 * 1024, // 1 MB
-          flags: this.photo.flags,
-          precise: true,
-          cdn_supported: false,
-          location: {
-            _: 'inputPhotoFileLocation',
-            id: this.photo.id,
-            access_hash: this.photo.access_hash,
-            file_reference: this.photo.file_reference,
-            thumb_size: 'l'
-          }
-        },
-        {
-          dcId: this.photo.dc_id
-        }
-      ).then(response => {
-        this.bytes = response.bytes;
-        this.mime = this.getMIME(response.type._);
-        this.download = true;
-      }).catch(error => {
-        console.log('error');
-      }).finally(() => {
-        this.$emit('overlay-off');
-      });
+      this.i++;
     },
     downloadPhoto() {
-      FileSaver.saveAs(new Blob([this.bytes], { type: this.mime }), this.photo.id + '.jpg');
+      FileSaver.saveAs(new Blob([this.parts], { type: this.mime }), this.photo.id + '.jpg');
     },
     getMIME(type) {
       switch (type) {
@@ -81,6 +57,48 @@ export default {
         default:
           return "application/octet-stream";
       }
+    }
+  },
+  watch: {
+    i: function() {
+      this.$mtproto.call(
+        'upload.getFile',
+        {
+          location: {
+            _: 'inputPhotoFileLocation',
+            id: this.photo.id,
+            access_hash: this.photo.access_hash,
+            file_reference: this.photo.file_reference,
+            thumb_size: 'l'
+          },
+          flags: this.photo.flags,
+          offset: this.i * this.mb,
+          limit: this.mb,
+          precise: true,
+          cdn_supported: false
+        },
+        {
+          dcId: this.photo.dc_id
+        }
+      ).then(response => {
+        var _parts = new Uint8Array(this.parts.length + response.bytes.length);
+
+        _parts.set(this.parts);
+        _parts.set(response.bytes, this.parts.length);
+
+        this.parts = _parts;
+
+        if (response.type._ == 'storage.filePartial')
+          this.i++;
+        else {
+          this.mime = this.getMIME(response.type._);
+          this.download = true;
+        }
+      }).catch(error => {
+        console.log(error);
+      }).finally(() => {
+        this.$emit('overlay-off');
+      });
     }
   }
 }
