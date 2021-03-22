@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <b-navbar toggleable="lg" type="dark" variant="info">
       <b-collapse is-nav>
         <b-navbar-nav>
@@ -20,7 +19,7 @@
     </b-navbar>
 
     <b-overlay :show="overlay" variant="secondary">
-      <b-container fluid>
+      <b-container fluid class="min-vh-100">
         <b-row v-show="channel_index" class="pt-5">
           <b-col class="col-lg-6 mx-auto">
 
