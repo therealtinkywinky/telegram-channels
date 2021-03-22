@@ -1,6 +1,5 @@
 <template>
   <div>
-    <b-overlay :show="overlay" variant="secondary" no-wrap></b-overlay>
 
     <b-navbar toggleable="lg" type="dark" variant="info">
       <b-collapse is-nav>
@@ -20,35 +19,37 @@
       </b-collapse>
     </b-navbar>
 
-    <b-container fluid>
-      <b-row v-show="channel_index" class="mt-5">
-        <b-col class="col-lg-6 mx-auto">
+    <b-overlay :show="overlay" variant="secondary">
+      <b-container fluid>
+        <b-row v-show="channel_index" class="pt-5">
+          <b-col class="col-lg-6 mx-auto">
 
-          <b-button-group class="mx-1">
-            <b-button variant="danger" :disabled="message_index == 0" @click="$refs.carousel.prev()">Previous</b-button>
-            <b-button disabled variant="outline-secondary">{{ message_index + 1 }} / {{ messages.length }}</b-button>
-            <b-button variant="secondary" @click="loadMore">Load More...</b-button>
-            <b-button variant="success" :disabled="message_index == messages.length - 1" @click="$refs.carousel.next()">Next</b-button>
-          </b-button-group>
+            <b-button-group class="mx-1">
+              <b-button variant="danger" :disabled="message_index == 0" @click="$refs.carousel.prev()">Previous</b-button>
+              <b-button disabled variant="outline-secondary">{{ message_index + 1 }} / {{ messages.length }}</b-button>
+              <b-button variant="secondary" @click="loadMore">Load More...</b-button>
+              <b-button variant="success" :disabled="message_index == messages.length - 1" @click="$refs.carousel.next()">Next</b-button>
+            </b-button-group>
 
-          <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0" controls>
-            <b-carousel-slide v-for="message in messages" img-blank img-height="550">
-              <template #default>
-                <document v-if="message.type == 'document'" :document="message.document"></document>
+            <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0" controls>
+              <b-carousel-slide v-for="message in messages" img-blank img-height="550">
+                <template #default>
+                  <document v-if="message.type == 'document'" :document="message.document"></document>
 
-                <photo
-                  v-else-if="message.type == 'photo'"
-                  v-on:overlay-on="overlay = true"
-                  v-on:overlay-off="overlay = false"
-                  :text="message.text"
-                  :photo="message.photo">
-                </photo>
-              </template>
-            </b-carousel-slide>
-          </b-carousel>
-        </b-col>
-      </b-row>
-    </b-container>
+                  <photo
+                    v-else-if="message.type == 'photo'"
+                    v-on:overlay-on="overlay = true"
+                    v-on:overlay-off="overlay = false"
+                    :text="message.text"
+                    :photo="message.photo">
+                  </photo>
+                </template>
+              </b-carousel-slide>
+            </b-carousel>
+          </b-col>
+        </b-row>
+      </b-container>
+    </b-overlay>
   </div>
 </template>
 
