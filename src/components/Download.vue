@@ -58,9 +58,10 @@ export default {
 
         self.$emit('progress', this.percent);
 
-        if (this.i == this.n - 1)
+        if (this.i == this.n - 1) {
+          self.$emit('progress', 100);
           FileSaver.saveAs(new Blob(this.parts, { type: self.document.mime_type }), self.name);
-        else
+        } else
           this.i++;
       }).catch(error => {
         console.error(error);

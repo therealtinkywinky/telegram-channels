@@ -27,6 +27,7 @@
           <b-button-group class="mx-1">
             <b-button variant="danger" :disabled="message_index == 0" @click="$refs.carousel.prev()">Previous</b-button>
             <b-button disabled variant="outline-secondary">{{ message_index + 1 }} / {{ messages.length }}</b-button>
+            <b-button variant="secondary" @click="loadMore">Load More...</b-button>
             <b-button variant="success" :disabled="message_index == messages.length - 1" @click="$refs.carousel.next()">Next</b-button>
           </b-button-group>
 
