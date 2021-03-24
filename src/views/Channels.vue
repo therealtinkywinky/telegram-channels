@@ -30,19 +30,17 @@
               <b-button variant="success" :disabled="message_index == messages.length - 1" @click="$refs.carousel.next()">Next</b-button>
             </b-button-group>
 
-            <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0" controls>
-              <b-carousel-slide v-for="message in messages" img-blank img-height="550">
-                <template #default>
-                  <document v-if="message.type == 'document'" :document="message.document"></document>
+            <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0">
+              <b-carousel-slide v-for="message in messages" class="min-vh-100">
+                <document v-if="message.type == 'document'" :document="message.document"></document>
 
-                  <photo
-                    v-else-if="message.type == 'photo'"
-                    v-on:overlay-on="overlay = true"
-                    v-on:overlay-off="overlay = false"
-                    :text="message.text"
-                    :photo="message.photo">
-                  </photo>
-                </template>
+                <photo
+                  v-else-if="message.type == 'photo'"
+                  v-on:overlay-on="overlay = true"
+                  v-on:overlay-off="overlay = false"
+                  :text="message.text"
+                  :photo="message.photo">
+                </photo>
               </b-carousel-slide>
             </b-carousel>
           </b-col>
@@ -142,5 +140,12 @@ export default {
 <style>
 .card-header, .card-footer {
   border: 0px;
+}
+
+.carousel-caption {
+  width: 100%;
+  top: 20px;
+  left: 0px;
+  right: 0px;
 }
 </style>
