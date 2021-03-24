@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="dark" variant="info">
+    <b-navbar toggleable="lg" type="dark" variant="primary">
       <b-collapse is-nav>
         <b-navbar-nav>
           <b-nav-form>
@@ -32,7 +32,12 @@
 
             <b-carousel ref="carousel" @sliding-end="onSlideEnd" :interval="0">
               <b-carousel-slide v-for="message in messages" class="min-vh-100">
-                <document v-if="message.type == 'document'" :document="message.document"></document>
+                <document
+                  v-if="message.type == 'document'"
+                  v-on:overlay-on="overlay = true"
+                  v-on:overlay-off="overlay = false"
+                  :document="message.document">
+                </document>
 
                 <photo
                   v-else-if="message.type == 'photo'"

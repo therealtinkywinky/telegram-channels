@@ -20,6 +20,7 @@ export default {
   },
   methods: {
     download() {
+      this.$parent.$emit('overlay-on');
       this.i++;
     }
   },
@@ -65,6 +66,8 @@ export default {
           this.i++;
       }).catch(error => {
         console.error(error);
+      }).finally(() => {
+        this.$parent.$emit('overlay-off');
       });
     }
   }
