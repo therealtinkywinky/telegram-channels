@@ -7,7 +7,7 @@ export default {
   name: 'logout',
   methods: {
     logout() {
-      this.$mtproto.call('auth.logOut').then(() => { this.$router.push('/') });
+      this.$mtproto.call('auth.logOut').then(() => { this.$router.push('/login') });
     }
   },
 }
