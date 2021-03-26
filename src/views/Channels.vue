@@ -12,7 +12,7 @@
 
         <b-navbar-nav class="ml-auto">
           <b-nav-item>
-            <logout></logout>
+            <logout v-on:overlay-on="overlay = true" v-on:overlay-off="overlay = false"></logout>
           </b-nav-item>
         </b-navbar-nav>
       </b-collapse>

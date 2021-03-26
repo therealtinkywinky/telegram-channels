@@ -7,7 +7,12 @@ export default {
   name: 'logout',
   methods: {
     logout() {
-      this.$mtproto.call('auth.logOut').then(() => { this.$router.push('/login') });
+      this.$emit('overlay-on');
+
+      this.$mtproto.call('auth.logOut').then(() => {
+        this.$emit('overlay-off');
+        this.$router.push('/login')
+      });
     }
   },
 }
