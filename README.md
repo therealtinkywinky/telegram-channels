@@ -13,4 +13,4 @@ docker run -d -p <port>:8080 <image>
 
 ## Go for it!
 
-Point your browser to localhost:<port>
+Point your browser to localhost:\<port\>
