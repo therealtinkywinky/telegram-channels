@@ -2,7 +2,7 @@
 
 ## Create application
 
-Log in at [https://my.telegram.org](https://my.telegram.org) and create an application, you will get the api_id and api_hash
+Log in at [https://my.telegram.org](https://my.telegram.org) and create an application, you will get the **api_id** and **api_hash**
 
 ## Project setup
 ```
@@ -13,4 +13,4 @@ docker run -d -p <port>:8080 <image>
 
 ## Go for it!
 
-Point your browser to localhost:\<port\>
+Point your browser to **localhost:\<port\>**
