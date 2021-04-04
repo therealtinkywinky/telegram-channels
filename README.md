@@ -1,19 +1,12 @@
 # Telegram-Channels
 
+## Application
+
+Log in at https://my.telegram.org and create an application, you will get the api_id and api_hash
+
 ## Project setup
 ```
-npm install
+docker build -t <image> --build-arg API_ID=<api_id> --build-arg API_HASH=<api_hash> https://github.com/therealtinkywinky/telegram-channels.git
 ```
-
-### Compiles and hot-reloads for development
+docker run -d -p <port>:8080 <image>
 ```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
